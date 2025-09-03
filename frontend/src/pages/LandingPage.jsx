@@ -1,10 +1,10 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-export default function LandingPage() {
+ function LandingPage() {
   return (
     <div className="bg-light vh-100 d-flex flex-column justify-content-center align-items-center text-center">
-      {/* Navbar */}
+   
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
         <div className="container">
           <a className="navbar-brand fw-bold fs-4" href="#">
@@ -43,7 +43,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      
       <header className="container mt-5 pt-5">
         <div className="row align-items-center">
           <div className="col-lg-6 text-lg-start text-center">
@@ -75,7 +75,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Features Section */}
+ 
       <section id="features" className="container my-5 py-5">
         <h2 className="fw-bold mb-4">Key Features</h2>
         <div className="row g-4">
@@ -112,7 +112,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
+    
       <footer className="bg-dark text-white text-center py-3 w-100 mt-auto">
         <p className="mb-0 small">
           © {new Date().getFullYear()} AlumniConnect | Smart Education Initiative
@@ -121,3 +121,7 @@ export default function LandingPage() {
     </div>
   );
 }
+
+
+
+export default LandingPage;
