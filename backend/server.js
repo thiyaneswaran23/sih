@@ -10,6 +10,9 @@ import profileRoutes from "./src/routes/profile.js";
 import messageRoutes from "./src/routes/messages.js";
 import { Message } from "./src/models/Message.js";
 import authMiddleware from "./src/middleware/auth.js";
+import jobRoutes from "./src/routes/jobs.js";
+
+
 
 dotenv.config();
 
@@ -62,6 +65,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/connections", connectionRoutes);
+app.use("/api/jobs", jobRoutes);
 import("./src/routes/users.js").then(module => {
   app.use("/api/users", module.default);
 });

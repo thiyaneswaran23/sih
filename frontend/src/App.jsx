@@ -11,6 +11,7 @@ import AlumniNetwork from "./pages/AlumniNetwork";
 import Messages from "./pages/Messages";
 import UserProfile from "./components/UserProfile";
 import DashboardLayout from "./pages/DashBoardLayout"
+import Jobs from "./pages/Jobs";
 export default function App() {
   return (
     <Router>
@@ -38,6 +39,7 @@ export default function App() {
       <Route path="alumni/:id" element={<AlumniProfile />} />
       <Route path="messages" element={<Messages />} />
       <Route path="profile/:userId" element={<UserProfile />} />
+      <Route path="jobs" element={<Jobs />} />
     </Route>
   </Routes>
 </Router>

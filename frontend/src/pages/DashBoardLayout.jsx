@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaBell } from "react-icons/fa"; // ✅ bell icon
+import { FaBell } from "react-icons/fa";
 
 export default function DashboardLayout() {
   const [user, setUser] = useState(null);
@@ -30,9 +30,12 @@ export default function DashboardLayout() {
   const fetchRequests = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/connections/requests", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "http://localhost:5000/api/connections/requests",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setRequests(res.data.requests);
     } catch (err) {
       console.error("Failed to fetch requests", err);
@@ -60,7 +63,7 @@ export default function DashboardLayout() {
         { requestId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setRequests(requests.filter((r) => r._id !== requestId)); // remove from list
+      setRequests(requests.filter((r) => r._id !== requestId));
     } catch (err) {
       console.error("Failed to accept request", err);
     }
@@ -84,9 +87,7 @@ export default function DashboardLayout() {
                 onClick={() => setShowDropdown(!showDropdown)}
               />
               {requests.length > 0 && (
-                <span
-                  className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                >
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {requests.length}
                 </span>
               )}
@@ -149,6 +150,11 @@ export default function DashboardLayout() {
             <li className="nav-item mb-2">
               <Link to="/dashboard/alumni" className="nav-link text-white">
                 Alumni Network
+              </Link>
+            </li>
+            <li className="nav-item mb-2">
+              <Link to="/dashboard/jobs" className="nav-link text-white">
+                Jobs
               </Link>
             </li>
             <li className="nav-item mb-2">
