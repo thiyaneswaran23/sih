@@ -16,15 +16,20 @@ export default function Messages() {
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+  const fetchConnectedUsers = async () => {
+    try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/users/", {
+      const res = await axios.get("http://localhost:5000/api/connections/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAllUsers(res.data.users.filter(u => u._id !== user._id));
-    };
-    fetchUsers();
-  }, [user._id]);
+      setAllUsers(res.data.users);
+    } catch (err) {
+      console.error("Failed to fetch connected users", err);
+    }
+  };
+  fetchConnectedUsers();
+}, [user._id]);
+
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
     socketRef.current.emit("join", user._id);

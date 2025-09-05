@@ -73,4 +73,30 @@ router.post("/accept", authMiddleware, async (req, res) => {
   }
 });
 
+// Get all connected users for the logged-in user
+router.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const connections = await Connection.find({
+      $or: [
+        { requester: req.userId, status: "connected" },
+        { recipient: req.userId, status: "connected" },
+      ],
+    })
+      .populate("requester", "fullName role profilePhoto")
+      .populate("recipient", "fullName role profilePhoto");
+
+    // return only the *other user* in each connection
+    const users = connections.map((c) =>
+      c.requester._id.toString() === req.userId.toString()
+        ? c.recipient
+        : c.requester
+    );
+
+    res.json({ users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch connections" });
+  }
+});
+
 export default router;
