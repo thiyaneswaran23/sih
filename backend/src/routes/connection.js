@@ -4,19 +4,25 @@ import { Connection } from "../models/Connection.js";
 
 const router = express.Router();
 
+// Send connection request
 router.post("/request", authMiddleware, async (req, res) => {
   try {
     const { targetUserId } = req.body;
+
     const exists = await Connection.findOne({
       $or: [
-        { requester: req.userId, recipient: targetUserId },
-        { requester: targetUserId, recipient: req.userId }
+        { requester: req.user._id, recipient: targetUserId },
+        { requester: targetUserId, recipient: req.user._id }
       ]
     });
 
     if (exists) return res.status(400).json({ message: "Connection already exists" });
 
-    const newConn = await Connection.create({ requester: req.userId, recipient: targetUserId });
+    const newConn = await Connection.create({
+      requester: req.user._id,   // ✅ FIXED
+      recipient: targetUserId
+    });
+
     res.json({ connection: newConn });
   } catch (err) {
     console.error(err);
@@ -24,12 +30,13 @@ router.post("/request", authMiddleware, async (req, res) => {
   }
 });
 
+// Get status of a connection
 router.get("/status/:targetUserId", authMiddleware, async (req, res) => {
   try {
     const conn = await Connection.findOne({
       $or: [
-        { requester: req.userId, recipient: req.params.targetUserId },
-        { requester: req.params.targetUserId, recipient: req.userId }
+        { requester: req.user._id, recipient: req.params.targetUserId },
+        { requester: req.params.targetUserId, recipient: req.user._id }
       ]
     });
 
@@ -40,12 +47,14 @@ router.get("/status/:targetUserId", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to get connection status" });
   }
 });
+
+// Get pending requests
 router.get("/requests", authMiddleware, async (req, res) => {
   try {
     const requests = await Connection.find({
-      recipient: req.userId,
+      recipient: req.user._id,
       status: "pending"
-    }).populate("requester", "fullName role _id"); 
+    }).populate("requester", "fullName role _id");
 
     res.json({ requests });
   } catch (err) {
@@ -54,14 +63,16 @@ router.get("/requests", authMiddleware, async (req, res) => {
   }
 });
 
+// Accept connection
 router.post("/accept", authMiddleware, async (req, res) => {
   try {
     const { requestId } = req.body;
     const conn = await Connection.findById(requestId);
     if (!conn) return res.status(404).json({ message: "Request not found" });
 
-    if (conn.recipient.toString() !== req.userId)
+    if (conn.recipient.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
+    }
 
     conn.status = "connected";
     await conn.save();
@@ -73,21 +84,20 @@ router.post("/accept", authMiddleware, async (req, res) => {
   }
 });
 
-// Get all connected users for the logged-in user
+// Get all connected users
 router.get("/my", authMiddleware, async (req, res) => {
   try {
     const connections = await Connection.find({
       $or: [
-        { requester: req.userId, status: "connected" },
-        { recipient: req.userId, status: "connected" },
+        { requester: req.user._id, status: "connected" },
+        { recipient: req.user._id, status: "connected" },
       ],
     })
       .populate("requester", "fullName role profilePhoto")
       .populate("recipient", "fullName role profilePhoto");
 
-    // return only the *other user* in each connection
     const users = connections.map((c) =>
-      c.requester._id.toString() === req.userId.toString()
+      c.requester._id.toString() === req.user._id.toString()
         ? c.recipient
         : c.requester
     );

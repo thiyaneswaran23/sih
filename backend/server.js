@@ -19,6 +19,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+import postsRouter from "./src/routes/posts.js";
+app.use("/api/posts", postsRouter);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MONGODB CONNECTED"))
